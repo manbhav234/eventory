@@ -1,0 +1,11 @@
+model Event {
+    id Int @id @default(autoincrement())
+    eventName String
+    startDate DateTime
+    endDate DateTime?
+    user User @relation(fields: [managedBy], references: [id])
+    managedBy Int 
+    products Product[]
+    orders Order[]
+    miscExpenses MiscExpenses[]
+}

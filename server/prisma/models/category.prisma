@@ -1,0 +1,7 @@
+model Category {
+    id Int @id  @default(autoincrement())
+    name String
+    userRef User @relation(fields: [user], references: [id])
+    user Int
+    products Product[]
+}

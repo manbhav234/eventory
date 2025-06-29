@@ -1,0 +1,13 @@
+model Product {
+    id Int @id @default(autoincrement())
+    name String
+    quantity Int
+    costPrice Int
+    sellingPrice Int
+    eventRef Event @relation(fields: [event], references: [id])
+    categoryRef Category @relation(fields: [category], references: [id])
+    orderedItems OrderItem[]
+    order Int
+    event Int
+    category Int
+}

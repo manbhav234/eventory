@@ -1,0 +1,14 @@
+model Order {
+    id Int @id @default(autoincrement())
+    orderDate DateTime @default(now())
+    totalAmount Int
+    paymentMode PaymentMode
+    eventRef Event @relation(fields: [event], references: [id])
+    event Int
+    orderItems OrderItem[]
+}
+
+enum PaymentMode {
+    CASH
+    UPI
+}

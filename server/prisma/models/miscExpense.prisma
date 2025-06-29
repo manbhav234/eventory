@@ -1,0 +1,8 @@
+model MiscExpenses {
+    id Int @id @default(autoincrement())
+    name String
+    amount Int
+    date DateTime 
+    eventRef Event @relation(fields: [event], references: [id])
+    event Int
+}

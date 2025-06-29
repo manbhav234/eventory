@@ -1,0 +1,8 @@
+model OrderItem {
+    id Int @id @default(autoincrement())
+    orderRef Order @relation(fields: [order], references: [id])
+    order Int
+    productRef Product @relation(fields: [product], references: [id])
+    product Int
+    quantity Int
+}
