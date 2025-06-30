@@ -1,7 +1,7 @@
-import { NextFunction, RequestHandler, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 
-export default function authenticate (req: RequestHandler, res: Response, next: NextFunction){
-    console.log('reached here')
+export default function authenticate (req: Request, res: Response, next: NextFunction){
+    console.log('reached authenticate middleware')
     if (req.user){
         console.log(req.user);
         next();

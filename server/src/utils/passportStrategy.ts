@@ -1,5 +1,5 @@
 import passport from 'passport'
-import errorHandler from './errorHandler'
+import errorHandler from './ErrorHandler'
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20'
 import prisma from "../db/client"
 import { User } from '@prisma/client'

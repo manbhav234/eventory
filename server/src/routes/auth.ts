@@ -1,11 +1,16 @@
 import { Router } from "express";
 import passport from 'passport'
+import authenticate from "../middlewares/authenticate";
 const router = Router()
 
 router.get('/google', passport.authenticate('google', {
     scope: ['profile', 'email'],
     prompt: 'select_account'
 }))
+
+router.get('/checkLogin', authenticate,(req, res) => {
+  res.json({success: true, user: req.user})
+})
 
 router.get('/logout', (req,res)=>{
   req.session = null

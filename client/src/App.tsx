@@ -1,34 +1,39 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from 'react'
+import {Routes, Route} from 'react-router-dom'
+const LandingPage = React.lazy(() => import("./pages/LandingPage"))
+const MainPage = React.lazy(() => import("./pages/MainPage"));
+import ProtectedRoute from './components/ProtectedRoute'
+import { Suspense } from 'react';
+import Loader from './components/Loader';
+import CreateEvent from './pages/CreateEvent';
+import MainEventScreen from './pages/MainEventScreen';
+import Dashboard from './pages/Dashboard';
+import SelectScreen from './components/SelectScreen';
+import FullScreenLoaderWrapper from './components/FullScreenLoaderWrapper';
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+      <Routes>
+        <Route path='/' element={
+            <Suspense fallback={<FullScreenLoaderWrapper><Loader /></FullScreenLoaderWrapper>}>
+              <LandingPage />
+            </Suspense>
+        }/>
+        <Route element={<ProtectedRoute />}>
+          <Route path='/main' element={
+            <Suspense fallback={<FullScreenLoaderWrapper><Loader /></FullScreenLoaderWrapper>}>
+              <MainPage />
+            </Suspense>
+          }>
+            <Route path='' element={<MainEventScreen/>}/>
+            <Route path='createEvent' element={<CreateEvent/>}/>
+            <Route path='event/:eventId' element={<Dashboard/>}>
+              <Route path=':selectedTab' element={<SelectScreen/>}/>
+            </Route>
+          </Route>
+        </Route>
+      </Routes>
   )
 }
 
