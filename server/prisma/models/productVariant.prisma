@@ -1,0 +1,12 @@
+model ProductVariant {
+    id Int @id @default(autoincrement())
+    size String?
+    weight String?
+    color String ?
+    costPrice Int
+    sellingPrice Int
+    quantity Int
+    image String?
+    productRef Product @relation(fields: [productId], references: [id])
+    productId Int
+}

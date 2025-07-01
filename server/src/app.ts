@@ -1,9 +1,13 @@
 import express from "express"
 import passport from 'passport';
 import './utils/passportStrategy'
+
 import authRouter from "./routes/auth";
 import eventsRouter from './routes/events'
+import userRouter from './routes/user'
+
 import cookieSession from 'cookie-session'
+
 const app = express();
 
 app.use(cookieSession({
@@ -16,5 +20,6 @@ app.use(passport.session())
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/events", eventsRouter)
+app.use("/api/v1/user", userRouter)
 
 export default app;

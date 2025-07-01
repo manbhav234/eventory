@@ -9,8 +9,8 @@ import { Outlet } from "react-router-dom";
 const MainPage: React.FC = () => {
     return (
       <SidebarProvider>
-        <AppSidebar />
-        <SidebarTrigger/>
+          <AppSidebar/>
+          <SidebarTrigger />
         <Outlet/>
       </SidebarProvider>
     )

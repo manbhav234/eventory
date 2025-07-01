@@ -16,7 +16,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const {user, fetchEvents, events, isLoading, selectedEvent, sideTabs} = useAppStore();
 
   useEffect(() => {
-    fetchEvents();
+      const callFetchEvents = async () => {
+        fetchEvents();
+      }
+      callFetchEvents();
   }, [fetchEvents])
 
   return (

@@ -5,17 +5,16 @@ import {
   CardTitle,
 } from "../ui/card"
 
-export function SectionCard() {
+const SectionCard = ({title, value}: {title: string, value: number}) => {
   return (
-    <div className="grid grid-cols-4">
       <Card className="pb-12">
         <CardHeader>
-          <CardDescription>Total Revenue</CardDescription>
+          <CardDescription>{title}</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            $1,250.00
+            ₹{value}
           </CardTitle>
         </CardHeader>
       </Card>
-    </div>
   )
 }
+export default SectionCard;

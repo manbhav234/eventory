@@ -1,51 +1,63 @@
-import type React from "react"
 import axios from 'axios'
-import { useState } from "react"
+import { useState } from 'react';
 import { CalendarIcon, Plus } from "lucide-react"
 import { format } from "date-fns"
-
+import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "@/components/ui/form";
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 import useAppStore from "@/store/mainStore"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod"
+import AlertBox from '@/components/AlertBox';
+
+const formSchema = z.object({
+  eventName: z.string().min(2, {message: "Event name must be atleast 2 characters long"}).max(50, {message: "Event name cannot exceed 50 characters"}),
+  startDate: z.date(),
+  endDate: z.date().optional(),
+}).refine((data) => data.endDate ? data.startDate < data.endDate : data.startDate, {
+    message: "Start date must be before end date",
+    path: ["endDate"]
+})
+
 
 export default function CreateEvent() {
-  const [eventName, setEventName] = useState("")
-  const [startDate, setStartDate] = useState<Date>()
-  const [endDate, setEndDate] = useState<Date>()
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [errorMessage, setErrorMessage] = useState("")
+  //TODO Handle loading on clicking submit
   const {user, addEvent} = useAppStore();
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState(false);
+  const form = useForm<z.infer<typeof formSchema>>({
+          resolver: zodResolver(formSchema),
+          defaultValues: {
+              eventName: "",
+              startDate: undefined,
+              endDate: undefined
+          }
+      })
+
+
+  const onFormSubmit = async (data: z.infer<typeof formSchema>) => {
+    setMessage("");
+    setError(false);
     const response = await axios.post('/api/v1/events/create', {
-        eventName,
+        eventName: data.eventName,
+        startDate: data.startDate,
+        endDate: data.endDate,
         user: user?.id,
-        startDate: format(startDate!, "dd-MM-yyyy"),
-        endDate: endDate ? format(endDate, "dd-MM-yyyy") : "",
-    })
+    }, {withCredentials: true})
     if (response.data.success){
-        setEventName("")
-        setStartDate(undefined)
-        setEndDate(undefined)
-        setIsSubmitting(false)
-        addEvent(response.data.event)
+      addEvent(response.data.event);
+      setMessage(response.data.message);
+      form.reset({eventName: "", startDate: undefined, endDate: undefined});
     }else{
-        console.log("Error creating the event")
-        setErrorMessage("Error creating the event")
-        setEventName("")
-        setStartDate(undefined)
-        setEndDate(undefined)
-        setIsSubmitting(false)
+       setMessage(response.data.message);
+       setError(true);
     }
   }
-
-  const isFormValid = eventName.trim() && startDate && (endDate != undefined && startDate < endDate)
 
   return (
     <div className="w-full flex justify-center items-center">
@@ -66,106 +78,141 @@ export default function CreateEvent() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <Form {...form}>
+            <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="eventName">Event Name *</Label>
-                <Input
-                  id="eventName"
-                  placeholder="Enter event name"
-                  value={eventName}
-                  onChange={(e) => setEventName(e.target.value)}
-                  className="w-full"
+                <FormField
+                    control={form.control}
+                    name="eventName"
+                    render={( {field }) => (
+                        <FormItem>
+                        <FormLabel>Event Name</FormLabel>
+                        <FormControl>
+                            <Input placeholder="Enter Event Name" {...field} />
+                        </FormControl>
+                        <FormDescription>Enter an appropriate Event Name.</FormDescription>
+                        <FormMessage />
+                        </FormItem>
+                    )}
                 />
-                <p className="text-sm text-gray-500">Choose a descriptive name for your event</p>
               </div>
 
               <div className="grid gap-6 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label>Start Date *</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal",
-                          !startDate && "text-muted-foreground",
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {startDate ? format(startDate, "dd-MM-yyyy") : "Pick start date"}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={startDate}
-                        onSelect={(date) => {
-                                if (date) {
-                                    setStartDate(date);
+                  <FormField
+                      control={form.control}
+                      name="startDate"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col">
+                          <FormLabel>Start Date</FormLabel>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <FormControl>
+                                <Button
+                                  variant={"outline"}
+                                  className={cn(
+                                    "w-[240px] pl-3 text-left font-normal",
+                                    !field.value && "text-muted-foreground"
+                                  )}
+                                >
+                                  {field.value ? (
+                                    format(field.value, "PPP")
+                                  ) : (
+                                    <span>Pick a date</span>
+                                  )}
+                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                </Button>
+                              </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                              <Calendar
+                                mode="single"
+                                selected={field.value}
+                                onSelect={field.onChange}
+                                disabled={(date) =>
+                                  date.getUTCDate() < new Date().getUTCDate()
                                 }
-                                }}
-                        disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
+                                captionLayout="dropdown"
+                              />
+                            </PopoverContent>
+                          </Popover>
+                          <FormDescription>
+                            Enter Start Date of your Event
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                 </div>
 
                 <div className="space-y-2">
-                  <Label>End Date (Optional)</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal",
-                          !endDate && "text-muted-foreground",
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {endDate ? format(endDate, "dd-MM-yyyy") : "Pick end date"}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={endDate}
-                        onSelect={(date) => {
-                            if (date){
-                                setEndDate(date);
-                            }
-                        }}
-                        disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <p className="text-sm text-gray-500">Leave empty for single-day events</p>
+                  <FormField
+                            control={form.control}
+                            name="endDate"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-col">
+                                <FormLabel>End Date (optional)</FormLabel>
+                                <Popover>
+                                  <PopoverTrigger asChild>
+                                    <FormControl>
+                                      <Button
+                                        variant={"outline"}
+                                        className={cn(
+                                          "w-[240px] pl-3 text-left font-normal",
+                                          !field.value && "text-muted-foreground"
+                                        )}
+                                      >
+                                        {field.value ? (
+                                          format(field.value, "PPP")
+                                        ) : (
+                                          <span>Pick a date</span>
+                                        )}
+                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                      </Button>
+                                    </FormControl>
+                                  </PopoverTrigger>
+                                  <PopoverContent className="w-auto p-0" align="start">
+                                    <Calendar
+                                      mode="single"
+                                      selected={field.value}
+                                      onSelect={field.onChange}
+                                      disabled={(date) =>
+                                        date.getUTCDate() < new Date().getUTCDate()
+                                      }
+                                      captionLayout="dropdown"
+                                    />
+                                  </PopoverContent>
+                                </Popover>
+                                <FormDescription>
+                                  Enter End Date of your Event. 
+                                </FormDescription>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
                 </div>
               </div>
-              {endDate != undefined && startDate != undefined ? (startDate > endDate ? <span className="text-red-500 font-bold text-sm">*Start date is before End Date</span> : null ): null}
               <div className="flex gap-4 pt-4">
-                <Button type="submit" disabled={!isFormValid || isSubmitting} className="flex-1">
-                  {isSubmitting ? "Creating Event..." : "Create Event"}
+                <Button type="submit" className="flex-1">
+                  Submit
                 </Button>
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => {
-                    setEventName("")
-                    setStartDate(undefined)
-                    setEndDate(undefined)
+                    form.reset({eventName: "", startDate: undefined, endDate: undefined})
+                    setMessage("");
+                    setError(false);
                   }}
-                  disabled={isSubmitting}
                 >
                   Clear Form
                 </Button>
               </div>
             </form>
+            </Form>
           </CardContent>
         </Card>
-        <div>
-            <span className="text-red-500 font-bold text-sm">{errorMessage}</span>
-        </div>
+        {message ? <AlertBox error={error} title={message}/> : null}
       </div>
     </div>
   )

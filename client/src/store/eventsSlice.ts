@@ -40,7 +40,7 @@ export const eventsSlice: StateCreator<AppState, [], [], EventSlice> = (set, get
         if (get().user){
             set({isLoading: true})
             try {
-                const response = await axios.get(`/api/v1/events/fetchEvents/?id=${get().user?.id}`);
+                const response = await axios.get(`/api/v1/events/fetchEvents`);
                 if (response.data.success){
                     set({events: response.data.events, isLoading: false});
                 }
@@ -50,7 +50,10 @@ export const eventsSlice: StateCreator<AppState, [], [], EventSlice> = (set, get
         }
     },
     addEvent: (event: Event) => set((state) => ({events: [...state.events, event]})),
-    setCurrentEvent: (id: number) => set((state) => ({selectedEvent: id})),
+    setCurrentEvent: (id: number) => {
+        get().fetchCategories();
+        set((state) => ({selectedEvent: id}));
+    },
     sideTabs: [{title: "Dashboard", isActive: false}, {title: "Product List", isActive: false}, {title: "Add Products", isActive: false}, {title: "Orders", isActive: false}],
     currentTab: {} as Tab,
     setCurrentTab: (eventTitle: string) => {
