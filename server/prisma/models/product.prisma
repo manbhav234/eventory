@@ -7,9 +7,7 @@ model Product {
     image String?
     eventRef Event @relation(fields: [event], references: [id])
     categoryRef Category @relation(fields: [category], references: [id])
-    orderedItems OrderItem[]
-    productVariants ProductVariant[]
-    order Int
+    orders OrderItem[]
     event Int
     category Int
 }

@@ -19,7 +19,7 @@ const formSchema = z.object({
   eventName: z.string().min(2, {message: "Event name must be atleast 2 characters long"}).max(50, {message: "Event name cannot exceed 50 characters"}),
   startDate: z.date(),
   endDate: z.date().optional(),
-}).refine((data) => data.endDate ? data.startDate < data.endDate : data.startDate, {
+}).refine((data) => data.endDate ? data.startDate < data.endDate : true, {
     message: "Start date must be before end date",
     path: ["endDate"]
 })
@@ -43,6 +43,7 @@ export default function CreateEvent() {
   const onFormSubmit = async (data: z.infer<typeof formSchema>) => {
     setMessage("");
     setError(false);
+    console.log(data.startDate)
     const response = await axios.post('/api/v1/events/create', {
         eventName: data.eventName,
         startDate: data.startDate,

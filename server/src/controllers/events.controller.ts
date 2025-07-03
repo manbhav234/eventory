@@ -1,6 +1,7 @@
 import prisma from "../db/client";
 import { Event } from "@prisma/client";
 import { Request, Response, NextFunction } from "express";
+import parseDate from "../utils/parseDate";
 
 const createEvent = async (req: Request, res: Response, next: NextFunction) => {
     const body = req.body;
@@ -11,12 +12,13 @@ const createEvent = async (req: Request, res: Response, next: NextFunction) => {
                 eventName: body.eventName
             }
         })
+        console.log(body.startDate);
         if (!checkEvent){
             const newEvent: Event = await prisma.event.create({
                 data: {
                     eventName: body.eventName,
-                    startDate: body.startDate,
-                    endDate: body.endDate ? null : body.endDate,
+                    startDate: parseDate(body.startDate),
+                    endDate: body.endDate ? parseDate(body.endDate) : null,
                     managedBy: body.user
                 }
             })

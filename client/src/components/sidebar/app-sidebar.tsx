@@ -17,7 +17,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   useEffect(() => {
       const callFetchEvents = async () => {
-        fetchEvents();
+        await fetchEvents();
       }
       callFetchEvents();
   }, [fetchEvents])

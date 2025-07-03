@@ -50,9 +50,11 @@ export const eventsSlice: StateCreator<AppState, [], [], EventSlice> = (set, get
         }
     },
     addEvent: (event: Event) => set((state) => ({events: [...state.events, event]})),
-    setCurrentEvent: (id: number) => {
+    setCurrentEvent: async (id: number) => {
         get().fetchCategories();
         set((state) => ({selectedEvent: id}));
+        console.log("reached here")
+        get().fetchProducts();
     },
     sideTabs: [{title: "Dashboard", isActive: false}, {title: "Product List", isActive: false}, {title: "Add Products", isActive: false}, {title: "Orders", isActive: false}],
     currentTab: {} as Tab,

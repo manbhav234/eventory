@@ -8,8 +8,11 @@ import { Switch } from "@/components/ui/switch"
 import { Plus } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "../ui/button"
+import AlertBox from "../AlertBox";
 import useAppStore from "@/store/mainStore"
-import type { Category } from "@/store/productSlice"
+import type { Category } from "@/store/categorySlice"
+import axios from "axios";
+
 
 import {
   Select,
@@ -52,6 +55,7 @@ const VariantSchema = z.object({
   variantValue: z.string().min(1, { message: "Variant value is required" }),
   variantCostPrice: z.number(),
   variantSellingPrice: z.number(),
+  variantQuantity: z.number()
 });
 
 type Variant = z.infer<typeof VariantSchema>;
@@ -63,24 +67,26 @@ const FormSchema = z.object({
   sellingPrice: z.number(),
   inStock: z.boolean(),
   quantity: z.number(),
-  selectedCategory: z.string().min(3, {message: "Category name must be 3 characters long"}),
+  selectedCategory: z.string(),
   image: z.array(z.custom<File>()).max(1).refine((files) => files.every((file) => file.size <= 5 * 1024 * 1024), {
       message: "File size must be less than 5MB",
       path: ["files"],
-    }),
-  variants: z.array(VariantSchema).optional()
+    }).optional(),
+  variants: z.array(VariantSchema).optional(),
 })
 
 const AddProductsSection = () => {
   //TODO: improve variant display UI
+  //TODO: bug fix - when inStock selected, dont allow 0 value 
     const defaultVariant: Variant = {
         variantType: "Color",         
         variantValue: "",
         variantCostPrice: 0,
         variantSellingPrice: 0,
+        variantQuantity: 0
     };
 
-  const {categories, addCategory} = useAppStore();
+  const {categories, addCategory, selectedEvent, addProduct} = useAppStore();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -100,8 +106,44 @@ const AddProductsSection = () => {
   const [newCategoryName, setNewCategoryName] = useState("")
   const [variants, setVariants] = useState<Variant[]>([])
   const [variant, setVariant] = useState<Variant>(defaultVariant)
-  function onFormSubmit(data: z.infer<typeof FormSchema>) {
-    console.log(data)
+  const [message, setMessage] = useState("")
+  const [error, setError] = useState(false);
+  const onFormSubmit = async (data: z.infer<typeof FormSchema>) => {
+    setMessage("");
+    setError(false);
+    const formData = new FormData();
+    if (data.image){
+        const imageFile = data.image[0];
+        formData.append("image", imageFile)
+    }
+    const productData = {
+        productName: data.productName,
+        costPrice: data.costPrice,
+        sellingPrice: data.sellingPrice,
+        quantity: data.quantity ? data.quantity: 0,
+        selectedCategory: Number(data.selectedCategory),
+        variants: variants,
+        eventId: selectedEvent
+    };
+    formData.append("product", JSON.stringify(productData));
+    const response = await axios.post('/api/v1/products/addProduct', formData, { withCredentials: true, headers: {
+      "Content-Type": "multipart/form-data"
+    } });
+    if (response.data.success){
+        response.data.products.map((product) => {
+            addProduct(product);
+        })
+        form.reset();
+        setError(false)
+        setMessage(response.data.message)
+    }else{
+        form.reset();
+        setError(true)
+        setMessage(response.data.message);
+    }
+    setVariant(defaultVariant)
+    setStockToggle(false)
+    setVariants([])
   }
 
   const handleStockToggle = () => {
@@ -109,29 +151,27 @@ const AddProductsSection = () => {
   }
 
   const handleAddNewCategory = async () => {
-    console.log("handle add new triggered")
     await addCategory(newCategoryName);
     setNewCategoryName("");
   }
 
   const handleAddNewVariant = () => {
     setVariants([...variants, variant]);
-    setVariant(defaultVariant)
   }
 
-  console.log(form.getValues("image"))
   return (
   <div className="w-full h-full flex justify-center items-center mt-4">
       <div className="w-full">
-        <div className="mb-8 flex justify-between">
+        <div className="mb-8 grid grid-cols-2">
             <div>
                 <h1 className="text-3xl font-bold">Add New Product</h1>
                 <p className="mt-2 text-gray-600">Add a new product to your inventory</p>
             </div>
-            <Button type="submit" className="mx-2 md:mx-4 md:w-1/10">Submit</Button>
+            <Button type="submit" form="addProductForm" className="mx-2 w-1/2 justify-self-end place-self-center md:mx-4 md:w-1/5">Submit</Button>
+            {message ? <div className="col-span-2 md:justify-self-center md:w-1/2"><AlertBox error={error} title={message}/></div> : null}
         </div>
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onFormSubmit)} className="flex flex-col space-y-6 space-x-0 justify-center md:grid md:grid-cols-3 md:space-x-6 md:space-y-3">
+            <form id="addProductForm" onSubmit={form.handleSubmit(onFormSubmit)} className="flex flex-col space-y-6 space-x-0 justify-center md:grid md:grid-cols-3 md:space-x-6 md:space-y-3">
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
@@ -167,7 +207,7 @@ const AddProductsSection = () => {
                                         <FormItem>
                                         <FormLabel>Cost Price</FormLabel>
                                         <FormControl>
-                                            <Input type="number" placeholder="Enter Cost Price" {...field} />
+                                            <Input type="number" placeholder="Enter Cost Price" {...field} value={field.value ?? ""} onChange={(e) => field.onChange(+e.target.value)} />
                                         </FormControl>
                                         <FormMessage />
                                         </FormItem>
@@ -182,7 +222,7 @@ const AddProductsSection = () => {
                                         <FormItem>
                                         <FormLabel>Selling Price</FormLabel>
                                         <FormControl>
-                                            <Input type="number" placeholder="Enter Selling Price" {...field} />
+                                            <Input type="number" placeholder="Enter Selling Price" {...field} value={field.value ?? ""} onChange={(e) => field.onChange(+e.target.value)}/>
                                         </FormControl>
                                         <FormMessage />
                                         </FormItem>
@@ -193,7 +233,6 @@ const AddProductsSection = () => {
                         <div className="flex justify-between items-center pt-4">
                             <div className="space-x-1">
                                 <FormField
-                                    control={form.control}
                                     name="inStock"
                                     render={() => (
                                         <FormItem>
@@ -214,7 +253,7 @@ const AddProductsSection = () => {
                                         <FormItem>
                                         <FormLabel>Quantity</FormLabel>
                                         <FormControl>
-                                            <Input type="number" placeholder="Enter Product Quantity" {...field} />
+                                            <Input type="number" placeholder="Enter Product Quantity" {...field} value={field.value ?? ""} onChange={(e) => field.onChange(+e.target.value)}/>
                                         </FormControl>
                                         <FormMessage />
                                         </FormItem>
@@ -244,7 +283,7 @@ const AddProductsSection = () => {
                                     <FormItem>
                                     <FormLabel>Categories</FormLabel>
                                     <FormControl>
-                                            <Select>
+                                            <Select value={field.value} onValueChange={field.onChange}>
                                                 <SelectTrigger className="w-full">
                                                     <SelectValue placeholder="Select a category" />
                                                 </SelectTrigger>
@@ -252,7 +291,7 @@ const AddProductsSection = () => {
                                                     <SelectGroup>
                                                     <SelectLabel>Category</SelectLabel>
                                                     {categories.map((category: Category) => (
-                                                        <SelectItem key={category.id} value={category.name.toLowerCase()}>{category.name}</SelectItem>
+                                                        <SelectItem key={category.id} value={category.id.toString()}>{category.name}</SelectItem>
                                                     ))}
                                                     </SelectGroup>
                                                 </SelectContent>
@@ -373,7 +412,7 @@ const AddProductsSection = () => {
                     </CardHeader>
                     <CardContent>
                         <div className="flex flex-col w-full items-start">
-                        <div className="flex flex-col w-full md:flex-row justify-between pt-4 gap-2">
+                        <div className="flex flex-col w-full md:grid grid-cols-5 justify-between pt-4 gap-2">
                             <div className="space-x-1">
                              <FormField
                                 name="variantType"
@@ -442,6 +481,20 @@ const AddProductsSection = () => {
                                     )}
                                 />
                             </div>
+                             <div className="space-x-1">
+                                <FormField
+                                    name="variantQuantity"
+                                    render={( {field }) => (
+                                        <FormItem>
+                                        <FormLabel>Quantity</FormLabel>
+                                        <FormControl>
+                                            <Input type="number" placeholder="Enter Variant Quantity" {...field} value={variant.variantQuantity} onChange={(e) => {setVariant({...variant, variantQuantity: Number(e.target.value)})}}/>
+                                        </FormControl>
+                                        <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
                         </div>
                         <div className="w-full mt-4">
                              <FormField
@@ -466,17 +519,22 @@ const AddProductsSection = () => {
                         Product Variants
                         </CardTitle>
                     <CardDescription>
-                        Add variants of this product (if any)
+                        <div className="grid grid-cols-4 gap-2 justify-center items-center px-2 py-1 rounded-lg">
+                            <span>Type</span>
+                            <span>Value</span>
+                            <span>Cost Price</span>
+                            <span>Sell Price</span>
+                        </div>
                     </CardDescription>
                     </CardHeader>
                     <CardContent>
                         {variants.length > 0 ? variants.map((variant) => (
-                            <div>
-                                <span>{variant.variantType}</span>
-                                <span>{variant.variantValue}</span>
-                                <span>{variant.variantCostPrice}</span>
-                                <span>{variant.variantSellingPrice}</span>
-                            </div>
+                                <div className="grid grid-cols-4 gap-2 mb-1 justify-center items-center border border-white-500 px-2 py-1 rounded-lg">
+                                    <span>{variant.variantType}</span>
+                                    <span>{variant.variantValue}</span>
+                                    <span>{variant.variantCostPrice}</span>
+                                    <span>{variant.variantSellingPrice}</span>
+                                </div>
                         )) : <p className="text-center">No Variant Added</p>}
                     </CardContent>
                 </Card>
