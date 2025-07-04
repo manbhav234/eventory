@@ -55,8 +55,9 @@ export const eventsSlice: StateCreator<AppState, [], [], EventSlice> = (set, get
         set((state) => ({selectedEvent: id}));
         console.log("reached here")
         get().fetchProducts();
+        get().fetchOrders();
     },
-    sideTabs: [{title: "Dashboard", isActive: false}, {title: "Product List", isActive: false}, {title: "Add Products", isActive: false}, {title: "Orders", isActive: false}],
+    sideTabs: [{title: "Dashboard", isActive: false}, {title: "Product List", isActive: false}, {title: "Add Products", isActive: false}, {title: "Create Order", isActive: false}, {title: "View Orders", isActive: false}],
     currentTab: {} as Tab,
     setCurrentTab: (eventTitle: string) => {
         const {sideTabs}  = get()

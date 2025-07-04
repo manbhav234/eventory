@@ -11,7 +11,7 @@ const SectionCard = ({title, value}: {title: string, value: number}) => {
         <CardHeader>
           <CardDescription>{title}</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            ₹{value}
+            {!title.includes("Orders") ? "₹" : null}{value.toLocaleString(navigator.language, { minimumFractionDigits: title.includes("Orders") ? 0 : 2 })}
           </CardTitle>
         </CardHeader>
       </Card>

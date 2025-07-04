@@ -2,9 +2,10 @@ import { type ColumnDef } from "@tanstack/react-table"
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar"
 import { IconPhotoScan } from '@tabler/icons-react';
 import { Badge } from "../ui/badge";
-import { ProductActions } from "./ProductActions";
 import { ArrowUpDown } from "lucide-react"
 import { Button } from "../ui/button";
+import { Checkbox } from "../ui/checkbox";
+import CreateOrderSelectAction from "./CreateOrderSelectAction";
 
 //TODO: convert this type and other types to zod schemas later
 export type ProductTableCol = {
@@ -16,7 +17,23 @@ export type ProductTableCol = {
   costPrice: number
   sellingPrice: number
 }
-export const columns: ColumnDef<ProductTableCol>[] = [
+export const createOrderColumns: ColumnDef<ProductTableCol>[] = [
+  {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => <CreateOrderSelectAction row={row}/>,
+    enableSorting: false,
+    enableHiding: false,
+  },
   {
     accessorKey: "id",
     header: () => <span className="flex justify-center items center">Product ID</span>,
@@ -59,7 +76,6 @@ export const columns: ColumnDef<ProductTableCol>[] = [
     accessorKey: "stockStatus",
     header: () => <span className="flex justify-center items-center">Stock Status</span>,
     cell: ({row}) => {
-      console.log("reached here after stock update")
       const currQuantity: number = row.getValue("quantity");
       let color = "bg-green-100 text-green-800";
       let status = "IN STOCK"
@@ -148,10 +164,5 @@ export const columns: ColumnDef<ProductTableCol>[] = [
         </div>
       )
     }
-  },
-  {
-    id: "actions",
-    cell: ({row}) => <ProductActions row={row}/>
-
   },
 ]

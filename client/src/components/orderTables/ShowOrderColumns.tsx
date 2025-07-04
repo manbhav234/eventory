@@ -2,9 +2,9 @@ import { type ColumnDef } from "@tanstack/react-table"
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar"
 import { IconPhotoScan } from '@tabler/icons-react';
 import { Badge } from "../ui/badge";
-import { ProductActions } from "./ProductActions";
 import { ArrowUpDown } from "lucide-react"
 import { Button } from "../ui/button";
+import ShowOrderQuantityAction from "./ShowOrderQuantityAction";
 
 //TODO: convert this type and other types to zod schemas later
 export type ProductTableCol = {
@@ -16,7 +16,7 @@ export type ProductTableCol = {
   costPrice: number
   sellingPrice: number
 }
-export const columns: ColumnDef<ProductTableCol>[] = [
+export const showOrderColumns: ColumnDef<ProductTableCol>[] = [
   {
     accessorKey: "id",
     header: () => <span className="flex justify-center items center">Product ID</span>,
@@ -59,14 +59,15 @@ export const columns: ColumnDef<ProductTableCol>[] = [
     accessorKey: "stockStatus",
     header: () => <span className="flex justify-center items-center">Stock Status</span>,
     cell: ({row}) => {
-      console.log("reached here after stock update")
-      const currQuantity: number = row.getValue("quantity");
+      const stockStatus = row.getValue("stockStatus");
+
+      let status = "IN STOCK";
       let color = "bg-green-100 text-green-800";
-      let status = "IN STOCK"
-      if (currQuantity == 0) {
+
+      if (stockStatus == "OUT OF STOCK") {
         status = "OUT OF STOCK";
         color = "bg-red-100 text-red-800";
-      } else if (currQuantity <= 3) {
+      } else if (stockStatus == "RUNNING LOW") {
         status = "RUNNING LOW";
         color = "bg-yellow-100 text-yellow-800";
       }
@@ -95,13 +96,7 @@ export const columns: ColumnDef<ProductTableCol>[] = [
         </div>
       )
     },
-    cell: ({row}) => {
-      return (
-        <div className="flex justify-center items-center">
-          {row.getValue("quantity")}
-        </div>
-      )
-    }
+    cell: ({row}) => <ShowOrderQuantityAction row={row}/>
   },
   {
     accessorKey: "costPrice",
@@ -148,10 +143,5 @@ export const columns: ColumnDef<ProductTableCol>[] = [
         </div>
       )
     }
-  },
-  {
-    id: "actions",
-    cell: ({row}) => <ProductActions row={row}/>
-
   },
 ]

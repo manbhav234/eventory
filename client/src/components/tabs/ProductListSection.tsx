@@ -1,8 +1,6 @@
 import useAppStore from "@/store/mainStore";
 import { ProductDataTable } from "../productList/ProductDataTable";
 import {columns} from '@/components/productList/ProductListColumns'
-import { Loader } from "lucide-react";
-import { useEffect } from "react";
 const ProductListSection = () => {
 
     const {products} = useAppStore();

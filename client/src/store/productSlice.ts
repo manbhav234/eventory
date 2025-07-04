@@ -24,7 +24,7 @@ export interface ProductSlice {
     products: Product[],
     fetchProducts: () => Promise<void>,
     addProduct: (product: any) => void,
-    deleteProduct: (productId: number) => Promise<void>
+    deleteProduct: (productId: number) => Promise<void>,
 }
 
 
@@ -60,6 +60,9 @@ export const productSlice: StateCreator<AppState, [], [], ProductSlice> = (set, 
         if (response.data.success){
             set({products: get().products.filter((product) => product.id != productId)});
         }
-    }
+    },
+    // updateProducts: (updatedProducts: Product[]) => {
+    //     set({products: updatedProducts});
+    // }
 })
 
