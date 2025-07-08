@@ -7,5 +7,4 @@ model Event {
     managedBy Int 
     products Product[]
     orders Order[]
-    miscExpenses MiscExpenses[]
 }
