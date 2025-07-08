@@ -17,7 +17,7 @@ export interface DashboardSlice {
 }
 
 
-export const dashboardSlice: StateCreator<AppState, [], [], DashboardSlice> = (set, get) => ({
+export const dashboardSlice: StateCreator<AppState, [], [], DashboardSlice> = (_set, get) => ({
     totalInventoryValue: () => {
         const products = get().products;
         return products.reduce((total, product) => (product.costPrice * product.quantity) + total, 0);

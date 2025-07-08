@@ -1,4 +1,3 @@
-import { useState } from "react"
 import {
   flexRender,
   type ColumnDef,
@@ -22,7 +21,7 @@ interface DataTableProps<TData, TValue> {
 }
 
 export function CreateOrderTable<TData extends Product, TValue>({
-  columns, data, table
+  columns, table
 }: DataTableProps<TData, TValue>) {
 
   return (

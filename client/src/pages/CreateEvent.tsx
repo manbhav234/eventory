@@ -14,6 +14,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod"
 import AlertBox from '@/components/AlertBox';
+import { API_URL } from '../../constants';
 
 const formSchema = z.object({
   eventName: z.string().min(2, {message: "Event name must be atleast 2 characters long"}).max(50, {message: "Event name cannot exceed 50 characters"}),
@@ -44,7 +45,7 @@ export default function CreateEvent() {
     setMessage("");
     setError(false);
     console.log(data.startDate)
-    const response = await axios.post('/api/v1/events/create', {
+    const response = await axios.post(`${API_URL}/api/v1/events/create`, {
         eventName: data.eventName,
         startDate: data.startDate,
         endDate: data.endDate,

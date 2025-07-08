@@ -2,9 +2,8 @@ import useAppStore from "@/store/mainStore";
 import { Button } from "../ui/button"
 import { Plus, Minus } from "lucide-react"
 import { useState } from "react";
-import { Row } from "react-day-picker";
 
-const ShowOrderQuantityAction = ({row}) => {
+const ShowOrderQuantityAction = ({row} : {row: any}) => {
         const {products, updateProductQuantity} = useAppStore();
         const currentProduct = products.filter((product) => product.id == row.getValue('id'))[0]
         const [quantity, setQuantity] = useState(1);

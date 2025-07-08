@@ -12,6 +12,7 @@ import AlertBox from "../AlertBox";
 import useAppStore from "@/store/mainStore"
 import type { Category } from "@/store/categorySlice"
 import axios from "axios";
+import { API_URL } from "../../../constants";
 
 
 import {
@@ -127,11 +128,11 @@ const AddProductsSection = () => {
         eventId: selectedEvent
     };
     formData.append("product", JSON.stringify(productData));
-    const response = await axios.post('/api/v1/products/addProduct', formData, { withCredentials: true, headers: {
+    const response = await axios.post(`${API_URL}/api/v1/products/addProduct`, formData, { withCredentials: true, headers: {
       "Content-Type": "multipart/form-data"
     } });
     if (response.data.success){
-        response.data.products.map((product) => {
+        response.data.products.map((product: any) => {
             addProduct(product);
         })
         form.reset();
@@ -326,7 +327,7 @@ const AddProductsSection = () => {
                             />
                             <FormField
                                 name="addNewButton"
-                                render={( {field }) => (
+                                render={() => (
                                     <FormItem>
                                     <FormControl>
                                         <Button type="button" onClick={handleAddNewCategory}>Add New</Button>
@@ -426,11 +427,11 @@ const AddProductsSection = () => {
                             <div className="space-x-1">
                              <FormField
                                 name="variantType"
-                                render={( {field }) => (
+                                render={() => (
                                     <FormItem>
                                     <FormLabel>Variant Type</FormLabel>
                                     <FormControl>
-                                            <Select onValueChange={(value) => {setVariant({...variant, variantType: value})}} defaultValue="Color">
+                                            <Select onValueChange={(value : "Color" | "Weight" | "Size") => {setVariant({...variant, variantType: value})}} defaultValue="Color">
                                                 <SelectTrigger className="w-full">
                                                     <SelectValue placeholder="Select a Variant Type" />
                                                 </SelectTrigger>
@@ -509,7 +510,7 @@ const AddProductsSection = () => {
                         <div className="w-full mt-4">
                              <FormField
                                 name="newVariant"
-                                render={( {field }) => (
+                                render={() => (
                                     <FormItem>
                                     <FormControl>
                                         <Button type="button" onClick={handleAddNewVariant}>Add New</Button>

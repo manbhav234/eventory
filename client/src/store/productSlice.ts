@@ -1,6 +1,7 @@
 import { type StateCreator } from "zustand";
 import type { AppState } from "./mainStore";
 import axios from 'axios'
+import { API_URL } from '../../constants';
 
 export interface ProductVariant {
     variantType: string, 
@@ -34,7 +35,7 @@ export const productSlice: StateCreator<AppState, [], [], ProductSlice> = (set, 
         console.log("fetching products")
         set({isLoading: true});
         try {
-            const response = await axios.get(`/api/v1/products/fetchProducts?eventId=${get().selectedEvent}`);
+            const response = await axios.get(`${API_URL}/api/v1/products/fetchProducts?eventId=${get().selectedEvent}`);
             if (response.data.success){
                 set({products: response.data.products, isLoading: false});
             }
@@ -56,13 +57,10 @@ export const productSlice: StateCreator<AppState, [], [], ProductSlice> = (set, 
         }
     }),
     deleteProduct: async (productId: number) => {
-        const response = await axios.put('/api/v1/products/deleteProduct', {id: productId}, {withCredentials: true});
+        const response = await axios.put(`${API_URL}/api/v1/products/deleteProduct`, {id: productId}, {withCredentials: true});
         if (response.data.success){
             set({products: get().products.filter((product) => product.id != productId)});
         }
     },
-    // updateProducts: (updatedProducts: Product[]) => {
-    //     set({products: updatedProducts});
-    // }
 })
 

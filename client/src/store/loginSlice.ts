@@ -1,6 +1,7 @@
 import type { StateCreator } from "zustand";
 import axios from 'axios'
 import type { AppState } from "./mainStore";
+import { API_URL } from '../../constants';
 export interface User {
     id: number, 
     name: string, 
@@ -24,11 +25,11 @@ export const loginSlice: StateCreator<AppState, [], [], LoginSlice> = (set) => (
     checkLogin: async () => {
         set({isLoading: true})
         try {
-            const response = await axios.get('/api/v1/auth/checkLogin', {withCredentials: true});
+            const response = await axios.get(`${API_URL}/api/v1/auth/checkLogin`, {withCredentials: true});
             if (response.data.success){
                 set({isLoggedIn: true, user: response.data.user, error: null, isLoading: false});
             }
-        }catch(e){
+        }catch(e: any){
             set({isLoggedIn: false, error: e.message, user: null})
         }finally{
             set({isLoading: false})
@@ -37,11 +38,11 @@ export const loginSlice: StateCreator<AppState, [], [], LoginSlice> = (set) => (
     logoutUser: async () => {
         set({isLoading: true})
         try{
-            const response = await axios.get('/api/v1/auth/logout', {withCredentials: true});
+            const response = await axios.get(`${API_URL}/api/v1/auth/logout`, {withCredentials: true});
             if (response.data.success){
                 set({isLoggedIn: false, error: null, user: null})
             }
-        }catch(e){
+        }catch(e: any){
             set({isLoggedIn: false, error: e.message, user: null})
         }finally{
             set({isLoading: false})

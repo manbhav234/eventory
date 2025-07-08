@@ -1,6 +1,7 @@
 import type { StateCreator } from "zustand";
 import type { AppState } from "./mainStore";
 import axios from "axios";
+import { API_URL } from '../../constants';
 
 export interface Category {
     id: number,
@@ -19,7 +20,7 @@ export const categorySlice: StateCreator<AppState, [], [], CategorySlice> = (set
     fetchCategories: async () => {
             try{
                 console.log('fetching categories')
-                const response = await axios.get('/api/v1/user/fetchCategories', {withCredentials: true});
+                const response = await axios.get(`${API_URL}/api/v1/user/fetchCategories`, {withCredentials: true});
                 if (response.data.success){
                     set({categories: response.data.categories});
                 }else{
@@ -32,7 +33,7 @@ export const categorySlice: StateCreator<AppState, [], [], CategorySlice> = (set
     addCategory: async (categoryName: string) => {
         try{
             if (categoryName.length >= 3){
-                const response = await axios.post('/api/v1/user/addCategory', {
+                const response = await axios.post(`${API_URL}/api/v1/user/addCategory`, {
                     categoryName: categoryName
                 }, {withCredentials: true});
                 if (response.data.success){

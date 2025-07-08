@@ -1,6 +1,7 @@
 import type { StateCreator } from "zustand";
 import axios from 'axios'
 import type { AppState } from "./mainStore";
+import { API_URL } from '../../constants';
 
 export interface Tab {
     title: string,
@@ -40,11 +41,11 @@ export const eventsSlice: StateCreator<AppState, [], [], EventSlice> = (set, get
         if (get().user){
             set({isLoading: true})
             try {
-                const response = await axios.get(`/api/v1/events/fetchEvents`);
+                const response = await axios.get(`${API_URL}/api/v1/events/fetchEvents`);
                 if (response.data.success){
                     set({events: response.data.events, isLoading: false});
                 }
-            }catch(e){
+            }catch(e: any){
                 set({error: e.message, isLoading: false})
             }
         }
@@ -52,7 +53,7 @@ export const eventsSlice: StateCreator<AppState, [], [], EventSlice> = (set, get
     addEvent: (event: Event) => set((state) => ({events: [...state.events, event]})),
     setCurrentEvent: async (id: number) => {
         get().fetchCategories();
-        set((state) => ({selectedEvent: id}));
+        set(() => ({selectedEvent: id}));
         console.log("reached here")
         get().fetchProducts();
         get().fetchOrders();

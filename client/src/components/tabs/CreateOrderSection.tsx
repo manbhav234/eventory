@@ -17,6 +17,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 import axios from "axios";
+import { API_URL } from "../../../constants";
 
 const CreateOrderSection = () => {
 
@@ -62,7 +63,7 @@ const CreateOrderSection = () => {
         paymentMode,
         eventId: selectedEvent
     }
-    const response = await axios.post('/api/v1/orders/createOrder', data, {withCredentials: true});
+    const response = await axios.post(`${API_URL}/api/v1/orders/createOrder`, data, {withCredentials: true});
     if (response.data.success){
         setMessage(response.data.message);
         updateStockOnOrderCreation();
@@ -77,8 +78,8 @@ const CreateOrderSection = () => {
                 month: "2-digit",
                 year: "numeric",
             }),
-            paymentMode: data.paymentMode,
-            orderItems: data.products.map(({name, quantity, costPrice, ...rest}) => ({productName: name, quantity: quantity, productCost: costPrice}))
+            paymentMode: data.paymentMode as "CASH" | "UPI",
+            orderItems: data.products.map(({name, quantity, costPrice}) => ({productName: name, quantity: quantity, productCost: costPrice}))
         }
         console.log(orderDetails)
         addNewOrder(orderDetails)

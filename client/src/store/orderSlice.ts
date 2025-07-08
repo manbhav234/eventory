@@ -2,6 +2,7 @@ import type { StateCreator } from "zustand";
 import type { AppState } from "./mainStore";
 import type { Product } from "./productSlice";
 import axios from "axios";
+import { API_URL } from '../../constants';
 
 export interface OrderItem {
     productName: string, 
@@ -62,9 +63,9 @@ export const orderSlice: StateCreator<AppState, [], [], OrderSlice> = (set, get)
     },
     fetchOrders: async () => {
         try {
-            const response = await axios.get(`/api/v1/orders/fetchOrders?eventId=${get().selectedEvent}`, {withCredentials: true});
+            const response = await axios.get(`${API_URL}/api/v1/orders/fetchOrders?eventId=${get().selectedEvent}`, {withCredentials: true});
             if (response.data.success){
-                const finalOrders = response.data.orders.map((order) => ({...order, orderDate: new Date(order.orderDate).toLocaleDateString("en-GB", {
+                const finalOrders = response.data.orders.map((order: any) => ({...order, orderDate: new Date(order.orderDate).toLocaleDateString("en-GB", {
                     timeZone: "Asia/Kolkata",
                     day: "2-digit",
                     month: "2-digit",

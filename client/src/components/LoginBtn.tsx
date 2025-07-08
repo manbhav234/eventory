@@ -1,9 +1,10 @@
 import type React from "react";
+import { API_URL } from "../../constants";
 
 const LoginBtn: React.FC = () => {
 
     const handleLogin = () => {
-        window.location.href = "http://localhost:3000/api/v1/auth/google";
+        window.location.href = `${API_URL}/api/v1/auth/google`;
     }
 
     return (
