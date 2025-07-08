@@ -22,17 +22,6 @@ CREATE TABLE "Event" (
 );
 
 -- CreateTable
-CREATE TABLE "MiscExpenses" (
-    "id" SERIAL NOT NULL,
-    "name" TEXT NOT NULL,
-    "amount" INTEGER NOT NULL,
-    "date" TIMESTAMP(3) NOT NULL,
-    "event" INTEGER NOT NULL,
-
-    CONSTRAINT "MiscExpenses_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "Order" (
     "id" SERIAL NOT NULL,
     "orderDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -60,7 +49,7 @@ CREATE TABLE "Product" (
     "quantity" INTEGER NOT NULL,
     "costPrice" INTEGER NOT NULL,
     "sellingPrice" INTEGER NOT NULL,
-    "order" INTEGER NOT NULL,
+    "image" TEXT,
     "event" INTEGER NOT NULL,
     "category" INTEGER NOT NULL,
 
@@ -84,9 +73,6 @@ ALTER TABLE "Category" ADD CONSTRAINT "Category_user_fkey" FOREIGN KEY ("user") 
 
 -- AddForeignKey
 ALTER TABLE "Event" ADD CONSTRAINT "Event_managedBy_fkey" FOREIGN KEY ("managedBy") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "MiscExpenses" ADD CONSTRAINT "MiscExpenses_event_fkey" FOREIGN KEY ("event") REFERENCES "Event"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Order" ADD CONSTRAINT "Order_event_fkey" FOREIGN KEY ("event") REFERENCES "Event"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
