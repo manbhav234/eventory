@@ -1,7 +1,7 @@
 import express from "express"
 import passport from 'passport';
 import './utils/passportStrategy'
-
+import cors from 'cors'
 import authRouter from "./routes/auth";
 import eventsRouter from './routes/events'
 import userRouter from './routes/user'
@@ -12,11 +12,16 @@ import cookieSession from 'cookie-session'
 
 const app = express();
 
+
 app.use(cookieSession({
     maxAge: 30 * 24 * 60 * 60 * 1000,
     keys: [`${process.env.SESSION_COOKIE_KEY}`]
 }))
+app.use(cors({
+    origin: [process.env.CLIENT_URL!],
+    credentials: true
 
+}))
 app.use(express.json())
 app.use(passport.initialize());
 app.use(passport.session())
