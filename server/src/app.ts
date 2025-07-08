@@ -15,7 +15,9 @@ const app = express();
 
 app.use(cookieSession({
     maxAge: 30 * 24 * 60 * 60 * 1000,
-    keys: [`${process.env.SESSION_COOKIE_KEY}`]
+    keys: [`${process.env.SESSION_COOKIE_KEY}`],
+    sameSite: "none",
+    secure: true
 }))
 app.use(cors({
     origin: [process.env.CLIENT_URL!],
