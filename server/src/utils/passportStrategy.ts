@@ -8,8 +8,8 @@ passport.serializeUser((user, done) => {
     done(null, user);
 })
 
-passport.deserializeUser((user: Express.User, done) => {
-    done(null, user as User)
+passport.deserializeUser((user: User, done) => {
+    done(null, user)
 })
 
 async function userSignUp(name:string, email: string){

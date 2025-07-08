@@ -27,7 +27,7 @@ const addProduct = async (req: Request, res: Response, next: NextFunction) => {
                     })
                     res.json({success: true, message: "Product added successfully", products: [newProduct]})
                 }else{
-                    const formattedVariants = product.variants.map((variant) => {
+                    const formattedVariants = product.variants.map((variant: any) => {
                         return {
                             name: product.productName + '-' + variant.variantValue,
                             quantity: variant.variantQuantity,
@@ -60,7 +60,7 @@ const addProduct = async (req: Request, res: Response, next: NextFunction) => {
                     })
                     res.json({success: true, message: "Product added successfully", products: [newProduct]})
                 }else{
-                    const formattedVariants = product.variants.map((variant) => {
+                    const formattedVariants = product.variants.map((variant: any) => {
                         return {
                             name: product.productName + '-' + variant.variantValue,
                             quantity: variant.variantQuantity,

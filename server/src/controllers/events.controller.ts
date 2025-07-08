@@ -36,7 +36,7 @@ const fetchEvents = async (req: Request, res: Response, next: NextFunction) => {
     try{
         const events = await prisma.event.findMany({
             where: {
-                managedBy: req.user!.id
+                managedBy: req.user?.id
             }
         })
         res.json({success: true, events: events, message: "Events successfully fetched"})

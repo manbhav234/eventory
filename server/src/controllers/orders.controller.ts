@@ -17,7 +17,7 @@ const createOrder = async (req: Request, res: Response, next: NextFunction) => {
             })
 
             const orderItems = await tx.orderItem.createMany({
-                data: body.products.map((selectedProduct) => ({product: selectedProduct.id, order: order.id, quantity: selectedProduct.quantity})),
+                data: body.products.map((selectedProduct: any) => ({product: selectedProduct.id, order: order.id, quantity: selectedProduct.quantity})),
             })
 
             for (const item of body.products){
