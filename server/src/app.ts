@@ -10,6 +10,7 @@ import productRouter from './routes/products'
 import ordersRouter from './routes/orders'
 
 const app = express();
+app.set('trust proxy', true);
 app.use(cors({
     origin: [process.env.CLIENT_URL!],
     credentials: true
@@ -20,6 +21,7 @@ app.use(cookieSession({
     keys: [`${process.env.SESSION_COOKIE_KEY}`],
     sameSite: "none",
     secure: true,
+    httpOnly: true
 }))
 
 app.use(express.json())
