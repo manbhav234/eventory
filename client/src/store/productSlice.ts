@@ -35,7 +35,7 @@ export const productSlice: StateCreator<AppState, [], [], ProductSlice> = (set, 
         console.log("fetching products")
         set({isLoading: true});
         try {
-            const response = await axios.get(`${API_URL}/api/v1/products/fetchProducts?eventId=${get().selectedEvent}`);
+            const response = await axios.get(`${API_URL}/api/v1/products/fetchProducts?eventId=${get().selectedEvent}`, {withCredentials: true});
             if (response.data.success){
                 set({products: response.data.products, isLoading: false});
             }

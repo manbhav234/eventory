@@ -41,7 +41,7 @@ export const eventsSlice: StateCreator<AppState, [], [], EventSlice> = (set, get
         if (get().user){
             set({isLoading: true})
             try {
-                const response = await axios.get(`${API_URL}/api/v1/events/fetchEvents`);
+                const response = await axios.get(`${API_URL}/api/v1/events/fetchEvents`, {withCredentials: true});
                 if (response.data.success){
                     set({events: response.data.events, isLoading: false});
                 }
