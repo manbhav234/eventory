@@ -23,6 +23,7 @@ router.get('/google/redirect', passport.authenticate('google', {
     failureRedirect: `${process.env.CLIENT_URL}`,
     failureMessage: true // Passes the message to req.session
   }), (req,res)=>{
+    req.session!.user = req.user;
     res.redirect(`${process.env.CLIENT_URL}`)
 })
 
