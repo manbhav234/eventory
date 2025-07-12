@@ -158,7 +158,15 @@ const AddProductsSection = () => {
   }
 
   const handleAddNewVariant = () => {
-    setVariants([...variants, variant]);
+    if (variant.variantValue === ""){
+        setError(true);
+        setMessage("Must enter variant value to add a variant");
+    }else{
+        setError(false);
+        setMessage("");
+        setVariants([...variants, variant]);
+        setVariant(defaultVariant);
+    }
   }
 
   const handleClearForm = () => {
