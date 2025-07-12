@@ -95,7 +95,7 @@ const AddProductsSection = () => {
       productName: "",
       costPrice: 0,
       sellingPrice: 0,
-      inStock: false,
+      inStock: true,
       quantity: 0,
       selectedCategory: "",
       image: undefined,
@@ -103,7 +103,7 @@ const AddProductsSection = () => {
     },
   })
 
-  const [stockToggle, setStockToggle] = useState(false)
+  const [stockToggle, setStockToggle] = useState(true)
   const [newCategoryName, setNewCategoryName] = useState("")
   const [variants, setVariants] = useState<Variant[]>([])
   const [variant, setVariant] = useState<Variant>(defaultVariant)
@@ -144,7 +144,7 @@ const AddProductsSection = () => {
         setMessage(response.data.message);
     }
     setVariant(defaultVariant)
-    setStockToggle(false)
+    setStockToggle(true)
     setVariants([])
   }
 
@@ -162,7 +162,7 @@ const AddProductsSection = () => {
   }
 
   const handleClearForm = () => {
-    setStockToggle(false)
+    setStockToggle(true)
     form.reset();
     setVariant(defaultVariant);
     setVariants([]);
