@@ -5,6 +5,7 @@ import { Badge } from "../ui/badge";
 import { ArrowUpDown } from "lucide-react"
 import { Button } from "../ui/button";
 import ShowOrderQuantityAction from "./ShowOrderQuantityAction";
+import ShowOrderSellingPriceAction from "./ShowOrderSellingPriceAction";
 
 //TODO: convert this type and other types to zod schemas later
 export type ProductTableCol = {
@@ -136,12 +137,6 @@ export const showOrderColumns: ColumnDef<ProductTableCol>[] = [
         </div>
       )
     },
-    cell: ({row}) => {
-      return (
-        <div className="flex justify-center items-center">
-          ₹{row.getValue("sellingPrice")}
-        </div>
-      )
-    }
+    cell: ({row}) => <ShowOrderSellingPriceAction row={row} />
   },
 ]

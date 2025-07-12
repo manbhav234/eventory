@@ -23,6 +23,7 @@ export interface OrderSlice {
     addSelectedRow: (product: Product) => void,
     deleteSelectedRow: (productId: number) => void,
     updateProductQuantity: (productId: number, quantity: number) => void,
+    updateProductSellingPrice: (productId: number, sellingPrice: number) => void,
     clearSelectedProducts: () => void,
     createdOrders: Order[],
     addNewOrder: (orderDetails: Order) => void,
@@ -41,6 +42,9 @@ export const orderSlice: StateCreator<AppState, [], [], OrderSlice> = (set, get)
     })),
     updateProductQuantity: (productId: number, quantity: number) => set((state) => ({
         selectedProducts: state.selectedProducts.map((product) => productId == product.id ? {...product, quantity: quantity} : product)
+    })),
+    updateProductSellingPrice: (productId: number, sellingPrice: number) => set((state) => ({
+        selectedProducts: state.selectedProducts.map((product) => productId == product.id ? {...product, sellingPrice: sellingPrice} : product)
     })),
     clearSelectedProducts: () => {
         set({selectedProducts: []})
