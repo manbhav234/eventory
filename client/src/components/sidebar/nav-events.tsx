@@ -34,7 +34,7 @@ export function NavEvents({
   const {setCurrentEvent} = useAppStore();
   const setSelectedEvent = (id: number) => {
     setCurrentEvent(id);
-    navigate(`/main/event/${id}`)
+    navigate(`/main/event/${id}/dashboard`)
   }
 
   return (

@@ -18,7 +18,7 @@ const SelectScreen = () => {
         case "view orders":
             return <ViewOrderSection/>
         default:
-            return <div>Nothing</div>
+            return <DashboardSection/>
     }
 }
 
