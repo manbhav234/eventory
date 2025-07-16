@@ -7,5 +7,6 @@ const router = Router();
 
 router.post('/addProduct', authenticate, upload.single('image'), productsController.addProduct);
 router.get('/fetchProducts', authenticate, productsController.fetchProducts);
-router.put('/deleteProduct', authenticate, productsController.deleteProduct)
+router.put('/deleteProduct', authenticate, productsController.deleteProduct);
+router.put('/updateProduct', authenticate, productsController.updateProduct);
 export default router;

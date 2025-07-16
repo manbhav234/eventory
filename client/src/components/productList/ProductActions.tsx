@@ -22,7 +22,7 @@ export const ProductActions = ({ row }: { row: any }) => {
 
   const handleProductUpdate = async () => {
     console.log("updating the product")
-    await updateProduct(row.getValue("id"), quantity);
+    await updateProduct(row.getValue("id"), Number(quantity));
     setOpenUpdate(false);
   }
 
@@ -77,7 +77,7 @@ export const ProductActions = ({ row }: { row: any }) => {
       <AlertDialog open={openUpdate}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Update Product</AlertDialogTitle>
+            <AlertDialogTitle>Update Product - {row.getValue('name')}</AlertDialogTitle>
             <AlertDialogDescription>
               <Label className="my-2">
                 Enter New Quantity

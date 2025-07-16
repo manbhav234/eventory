@@ -66,6 +66,7 @@ export const productSlice: StateCreator<AppState, [], [], ProductSlice> = (set, 
     updateProduct: async (productId: number, quantity: number) => {
         const response = await axios.put(`${API_URL}/api/v1/products/updateProduct`, {productId: productId, quantity: quantity}, {withCredentials: true});
         if (response.data.success){
+            console.log(response.data.newProduct);
             set({products: get().products.map((oldProduct) => oldProduct.id == productId ? response.data.newProduct : oldProduct)});
         }
     }

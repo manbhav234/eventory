@@ -115,8 +115,29 @@ const deleteProduct = async (req: Request, res: Response, next: NextFunction) =>
     }
 }
 
+const updateProduct = async (req: Request, res: Response, next: NextFunction) => {
+    const body = req.body;
+    console.log("updating product")
+    try{
+        const product = await prisma.product.update({
+            where: {
+                id: body.productId
+            },
+            data: {
+                quantity: body.quantity
+            }
+        })
+        console.log(product);
+        res.json({success: true, message: "Product Updated Successfully", newProduct: product});
+    }catch(e){
+        console.log("Error occurred while deleting product: ", e);
+        res.json({success: false, message: "Could not update the product"});
+    }
+}
+
 export default {
     addProduct,
     fetchProducts,
-    deleteProduct
+    deleteProduct,
+    updateProduct
 }
