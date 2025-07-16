@@ -5,14 +5,25 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuIte
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogFooter, AlertDialogTitle, AlertDialogDescription, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
 import { MoreHorizontal, Trash } from "lucide-react";
 import useAppStore from "@/store/mainStore";
+import { Label } from "../ui/label";
+import { Input } from "../ui/input";
 
 export const ProductActions = ({ row }: { row: any }) => {
-  const [open, setOpen] = useState(false);
-  const {deleteProduct} = useAppStore()
+  const [openDelete, setOpenDelete] = useState(false);
+  const [openUpdate, setOpenUpdate] = useState(false);
+  const [quantity, setQuantity] = useState(row.getValue('quantity'));
+  const {deleteProduct, updateProduct} = useAppStore()
+
   const handleProductDelete = async () => {
       console.log("Deleting product", row.original.id);
       await deleteProduct(row.getValue("id"));
-      setOpen(false);
+      setOpenDelete(false);
+  }
+
+  const handleProductUpdate = async () => {
+    console.log("updating the product")
+    await updateProduct(row.getValue("id"), Number(quantity));
+    setOpenUpdate(false);
   }
 
   return (
@@ -25,12 +36,16 @@ export const ProductActions = ({ row }: { row: any }) => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem className="flex justify-center items-center">
+          <DropdownMenuItem className="flex justify-center items-center"
+             onSelect={() => {
+              setOpenUpdate(true);
+            }}
+          >
             <span>Update Product</span>
           </DropdownMenuItem>
           <DropdownMenuItem
             onSelect={() => {
-              setOpen(true);
+              setOpenDelete(true);
             }}
           >
             <Trash className="h-4 w-4 text-red-500 mr-2" />
@@ -39,7 +54,7 @@ export const ProductActions = ({ row }: { row: any }) => {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <AlertDialog open={open}>
+      <AlertDialog open={openDelete}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
@@ -48,7 +63,7 @@ export const ProductActions = ({ row }: { row: any }) => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => {setOpen(false)}}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => {setOpenDelete(false)}}>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleProductDelete}
             >
@@ -57,6 +72,30 @@ export const ProductActions = ({ row }: { row: any }) => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+
+      <AlertDialog open={openUpdate}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Update Product - {row.getValue('name')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              <Label className="my-2">
+                Enter New Quantity
+              </Label>
+              <Input type="number" min={0} placeholder="Enter New Quantity" value={quantity} onChange={(e) => {setQuantity(e.target.value)}}/>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => {setOpenUpdate(false)}}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleProductUpdate}
+            >
+              Update Product
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
     </>
   );
 };
