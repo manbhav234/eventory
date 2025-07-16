@@ -26,6 +26,7 @@ export interface ProductSlice {
     fetchProducts: () => Promise<void>,
     addProduct: (product: any) => void,
     deleteProduct: (productId: number) => Promise<void>,
+    updateProduct: (productId: number, quantity: number) => Promise<void>
 }
 
 
@@ -62,5 +63,11 @@ export const productSlice: StateCreator<AppState, [], [], ProductSlice> = (set, 
             set({products: get().products.filter((product) => product.id != productId)});
         }
     },
+    updateProduct: async (productId: number, quantity: number) => {
+        const response = await axios.put(`${API_URL}/api/v1/products/updateProduct`, {productId: productId, quantity: quantity}, {withCredentials: true});
+        if (response.data.success){
+            set({products: get().products.map((oldProduct) => oldProduct.id == productId ? response.data.newProduct : oldProduct)});
+        }
+    }
 })
 
