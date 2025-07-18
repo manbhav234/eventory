@@ -15,6 +15,7 @@ export interface Order {
     totalAmount: number,
     orderDate: string,
     paymentMode: 'CASH' | 'UPI',
+    customerName: string
     orderItems: OrderItem[]
 }
 
