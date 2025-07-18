@@ -12,7 +12,8 @@ const createOrder = async (req: Request, res: Response, next: NextFunction) => {
                     totalAmount: body.totalAmount,
                     orderDate: orderDate,
                     event: body.eventId,
-                    paymentMode: body.paymentMode
+                    paymentMode: body.paymentMode,
+                    customerName: body.customerName
                 }
             })
 

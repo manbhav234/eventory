@@ -18,6 +18,8 @@ import {
 } from "@tanstack/react-table"
 import axios from "axios";
 import { API_URL } from "../../../constants";
+import { Input } from "../ui/input";
+import { Label } from '../ui/label';
 
 const CreateOrderSection = () => {
 
@@ -25,6 +27,7 @@ const CreateOrderSection = () => {
     const [paymentMode, setPaymentMode] = useState("CASH");
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+    const [customerName, setCustomerName] = useState("");
     const [message, setMessage] = useState("");
     const [disableSubmit, setDisableSubmit] = useState(false);
     const [error, setError] = useState(false)
@@ -61,7 +64,8 @@ const CreateOrderSection = () => {
         totalAmount: selectedProducts.reduce((total, product) => total + (product.sellingPrice * product.quantity), 0),
         products: selectedProducts,
         paymentMode,
-        eventId: selectedEvent
+        eventId: selectedEvent,
+        customerName
     }
     const response = await axios.post(`${API_URL}/api/v1/orders/createOrder`, data, {withCredentials: true});
     if (response.data.success){
@@ -79,7 +83,8 @@ const CreateOrderSection = () => {
                 year: "numeric",
             }),
             paymentMode: data.paymentMode as "CASH" | "UPI",
-            orderItems: data.products.map(({name, quantity, costPrice}) => ({productName: name, quantity: quantity, productCost: costPrice}))
+            orderItems: data.products.map(({name, quantity, costPrice}) => ({productName: name, quantity: quantity, productCost: costPrice})),
+            customerName: data.customerName
         }
         console.log(orderDetails)
         addNewOrder(orderDetails)
@@ -97,7 +102,7 @@ const CreateOrderSection = () => {
 
   return (
     <div className="w-full flex justify-center">
-      <div className="w-full h-full">
+      <div className="w-full h-full mb-4">
         <div className="grid grid-cols-2 h-[10%]">
           <div>
             <h1 className="text-3xl font-bold">Create Order</h1>
@@ -122,15 +127,20 @@ const CreateOrderSection = () => {
           <ShowOrderTable columns={showOrderColumns} data={selectedProducts}/>
         </div>
         <div className="grid grid-cols-1 md:flex md:justify-between items-center gap-4 mt-4 pb-4">
-            <div className="flex justify-between md:justify-start items-center gap-4">
-                <span className="md:text-xl font-bold">Select Payment Method : </span>
+            <div className="flex justify-between md:justify-start items-center gap-2">
+                <Label className="text-lg md:text-xl font-bold whitespace-nowrap">Customer Name : </Label>
+                <Input type="text" placeholder="Enter Customer Name" value={customerName} onChange={(e) => {setCustomerName(e.target.value)}}/>
+            </div>
+            <div className="flex justify-between md:justify-start items-center gap-4 md:mx-4">
+                <Label className="text-lg md:text-xl font-bold whitespace-nowrap">Payment Method : </Label>
                 <ToggleGroup type="single" className="gap-2" defaultValue="CASH">
                     <ToggleGroupItem value="CASH" onClick={()=>{setPaymentMode("CASH")}}>Cash</ToggleGroupItem>
                     <ToggleGroupItem value="UPI" onClick={()=>{setPaymentMode("UPI")}}>UPI</ToggleGroupItem>
                 </ToggleGroup>
             </div>
-            <div className="flex justify-between items-center gap-4">
-                <span className="md:text-xl font-bold">Total Amount : ₹{selectedProducts.length == 0 ? 0 : selectedProducts.reduce((totalAmount, product) => totalAmount + (product.sellingPrice * product.quantity), 0)}</span>
+        </div>
+        <div className="flex justify-between items-center gap-4">
+                <Label className="text-lg md:text-xl font-bold whitespace-nowrap">Total Amount : ₹{selectedProducts.length == 0 ? 0 : selectedProducts.reduce((totalAmount, product) => totalAmount + (product.sellingPrice * product.quantity), 0)}</Label>
                 <Button
                 type="submit"
                 form="addProductForm"
@@ -140,7 +150,6 @@ const CreateOrderSection = () => {
                 >
                 Confirm Order
                 </Button>
-            </div>
         </div>
       </div>
     </div>

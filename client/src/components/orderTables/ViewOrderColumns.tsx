@@ -6,7 +6,8 @@ export type OrderTableCol = {
   id: number
   orderDate: string
   totalAmount: number
-  paymentMode:  "CASH" | "UPI"
+  paymentMode:  "CASH" | "UPI",
+  customerName: string
 }
 export const viewOrderColumns: ColumnDef<OrderTableCol>[] = [
   {
@@ -16,6 +17,17 @@ export const viewOrderColumns: ColumnDef<OrderTableCol>[] = [
       return (
         <div className="flex justify-center items-center">
           {row.getValue("id")}
+        </div>
+      )
+    }
+  },
+  {
+    accessorKey: "customerName",
+    header: () => <span className="flex justify-center items center">Customer Name</span>,
+    cell: ({row}) => {
+      return (
+        <div className="flex justify-center items-center">
+          {row.getValue("customerName")}
         </div>
       )
     }
