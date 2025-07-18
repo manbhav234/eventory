@@ -2,7 +2,7 @@ model Order {
     id Int @id @default(autoincrement())
     orderDate DateTime @default(now())
     totalAmount Int
-    customerName String
+    customerName String @default("")
     paymentMode PaymentMode
     eventRef Event @relation(fields: [event], references: [id])
     event Int
