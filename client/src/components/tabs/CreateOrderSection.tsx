@@ -96,7 +96,7 @@ const CreateOrderSection = () => {
   }
 
   return (
-    <div className="w-full h-[100%] flex justify-center">
+    <div className="w-full flex justify-center">
       <div className="w-full h-full">
         <div className="grid grid-cols-2 h-[10%]">
           <div>
@@ -113,10 +113,14 @@ const CreateOrderSection = () => {
           </div>
           {message ? <div className="col-span-2 mt-2 md:justify-self-center md:w-1/2"><AlertBox error={error} title={message}/></div> : null}
         </div>
-        <p className="text-xl font-bold mt-6">Available Stock</p>
-        <CreateOrderTable columns={createOrderColumns} data={products} table={createOrderTable}/>
+        <p className="text-xl font-bold mt-2">Available Stock</p>
+        <div className="max-h-[50%] overflow-auto ">
+          <CreateOrderTable columns={createOrderColumns} data={products} table={createOrderTable}/>
+        </div>
         <p className="mt-4 text-xl font-bold">Selected Products</p>
-        <ShowOrderTable columns={showOrderColumns} data={selectedProducts}/>
+        <div className="max-h-[50%] overflow-auto ">
+          <ShowOrderTable columns={showOrderColumns} data={selectedProducts}/>
+        </div>
         <div className="grid grid-cols-1 md:flex md:justify-between items-center gap-4 mt-4 pb-4">
             <div className="flex justify-between md:justify-start items-center gap-4">
                 <span className="md:text-xl font-bold">Select Payment Method : </span>
